@@ -1,3 +1,10 @@
+# changes from the orignal version:
+1. add random touch offset and random delay 
+2. add 10s gap between snapshots
+3. use adb.exe from android-studio. no need to copy adb.exe to windows folder.
+
+--------------------------------------
+
 # auto-arknights
 明日方舟自动刷图脚本
 
