@@ -3,22 +3,32 @@
 # @version：1.0
 # @update time：2019/8/31
 
-import os,time
+import os
+import time
 import cv2
+import random
+
+
+adbExe = '%LOCALAPPDATA%\\Android\\sdk\\platform-tools\\adb.exe'
 
 def connect():
     try:
-        os.system('adb connect 127.0.0.1:7555')
+        os.system(adbExe+' connect 127.0.0.1:7555')
     except:
         print('连接失败')
 
+
 def click(x, y):
-    os.system('adb shell input tap %s %s' % (x, y))
+    xr = random.randint(-2, 2)
+    yr = random.randint(-2, 2)
+    os.system(adbExe+' shell input tap %s %s' % (x+xr, y+yr))
+
 
 def screenshot():
     path = os.path.abspath('.') + '\images'
-    os.system('adb shell screencap /data/screen.png')
-    os.system('adb pull /data/screen.png %s' % path)
+    os.system(adbExe+' shell screencap /data/screen.png')
+    os.system(adbExe+' pull /data/screen.png %s' % path)
+
 
 def resize_img(img_path):
     img1 = cv2.imread(img_path, 0)
@@ -26,9 +36,10 @@ def resize_img(img_path):
     height, width = img1.shape[:2]
     ratio = 2560 / img2.shape[1]
     size = (int(width/ratio), int(height/ratio))
-    return cv2.resize(img1, size, interpolation = cv2.INTER_AREA)
+    return cv2.resize(img1, size, interpolation=cv2.INTER_AREA)
 
-def Image_to_position(image, m = 0):
+
+def Image_to_position(image, m=0):
     image_path = 'images/' + str(image) + '.png'
     screen = cv2.imread('images/screen.png', 0)
     # template = cv2.imread(image_path, 0)
@@ -45,7 +56,8 @@ def Image_to_position(image, m = 0):
         return center
     else:
         return False
-    
+
+
 def run(n):
     images = ['start-go1', 'start-go2', 'end', 'level up']
     round = 0
@@ -55,21 +67,24 @@ def run(n):
     # while not Image_to_position('end'):
     #     time.sleep(5)
     while True:
+        time.sleep(10.0)
         screenshot()
         now = ''
         for image in images:
-            if Image_to_position(image, m = 0) != False:
+            if Image_to_position(image, m=0) != False:
                 print(image)
                 now = image
-                time.sleep(0.5)
+                tr = random.random()
+                time.sleep(3.0+tr)
                 click(center[0], center[1])
-                
+
         if now == 'end':
-            time.sleep(0.8)
+            tr = random.random()
+            time.sleep(3.0+tr)
             round = round + 1
-            if round == n:
+            if round >= n:
                 break
-        
+
 
 if __name__ == '__main__':
     connect()
@@ -77,5 +92,4 @@ if __name__ == '__main__':
         run()
         time.sleep(3)'''
     run(int(input('输入刷图次数' + '\n')))
-    os.system('adb kill-server')
-
+    os.system(adbExe+' kill-server')
